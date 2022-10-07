@@ -26,9 +26,9 @@ class Model(nn.Module):
         self.framerate = framerate
         self.pool = pool
         self.vlad_k = vocab_size
-        
+
         # are feature alread PCA'ed?
-        if not self.input_size == 512:   
+        if not self.input_size == 512:
             self.feature_extractor = nn.Linear(self.input_size, 512)
             input_size = 512
             self.input_size = 512
@@ -93,7 +93,7 @@ class Model(nn.Module):
                   .format(weights, checkpoint['epoch']))
 
     def forward(self, inputs):
-        # input_shape: (batch,frames,dim_features)
+        # input_shape: (batch, frames, dim_features)
 
 
         BS, FR, IC = inputs.shape
@@ -107,9 +107,9 @@ class Model(nn.Module):
             inputs_pooled = self.pool_layer(inputs.permute((0, 2, 1))).squeeze(-1)
 
         elif self.pool == "MAX++" or self.pool == "AVG++":
-            nb_frames_50 = int(inputs.shape[1]/2)    
-            input_before = inputs[:, :nb_frames_50, :]        
-            input_after = inputs[:, nb_frames_50:, :]  
+            nb_frames_50 = int(inputs.shape[1]/2)
+            input_before = inputs[:, :nb_frames_50, :]
+            input_after = inputs[:, nb_frames_50:, :]
             inputs_before_pooled = self.pool_layer_before(input_before.permute((0, 2, 1))).squeeze(-1)
             inputs_after_pooled = self.pool_layer_after(input_after.permute((0, 2, 1))).squeeze(-1)
             inputs_pooled = torch.cat((inputs_before_pooled, inputs_after_pooled), dim=1)
